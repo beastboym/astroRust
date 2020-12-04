@@ -1,6 +1,6 @@
 # AstroRust
 
-Un vaisseaux spacial qui fait pew. Avec Ggez.
+Un vaisseaux spacial qui fait pew. Avec [Ggez](https://docs.rs/ggez/0.5.1/ggez/).
 
 Un jeu de type Space shooter réalisé en Rust !
 
