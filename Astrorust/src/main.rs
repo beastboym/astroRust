@@ -46,7 +46,7 @@ impl EventHandler for MainState {
 fn main() -> GameResult {
     let (ctx, event_loop) = &mut ContextBuilder::new("AstroRust", "Daouda, Claire")
         .window_mode(ggez::conf::WindowMode::default().dimensions(SCREEN_WIDTH,SCREEN_HEIGHT))
-        .window_setup(WindowSetup::default().title("AstrooooRuuuust"))
+        .window_setup(WindowSetup::default().title("AstroRust"))
         .build().unwrap();
     let main_state = &mut MainState {
         Ship: Rect::new(SCREEN_WIDTH / 2. - SHIP_DIM / 2., SCREEN_HEIGHT - SHIP_DIM * 2., SHIP_DIM, SHIP_DIM),
