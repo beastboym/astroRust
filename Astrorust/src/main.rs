@@ -12,6 +12,7 @@ use ggez::{
 use ggez::{event::KeyMods, graphics};
 use ggez::{Context, ContextBuilder, GameResult};
 use rand::Rng;
+use std::collections::HashMap;
 type Vector = ggez::mint::Vector2<f32>;
 
 const SCREEN_WIDTH: f32 = 600.;
@@ -118,25 +119,70 @@ impl FireShot {
 
 impl EventHandler for MainState {
     fn update(&mut self, ctx: &mut Context) -> GameResult {
+        
+        let mut shot = HashMap::new();
+        let mut i = 0;
+        for elem in self.fire.iter() {
+            shot.insert((elem.Ball.x as i32, elem.Ball.y as i32), i);
+            i += 1;
+        }
+
+        let mut obstacle = HashMap::new();
+        let mut j = 0;
+        for elem in self.meteor.iter() {
+            obstacle.insert((elem.rock.x as i32, elem.rock.y as i32), j);
+            j += 1;
+        }
+
         let mut rng = rand::thread_rng();
-        let meteor: f32 = rng.gen_range(0., 100.0);
-        if meteor < 2.0 {
+        let meteorite: f32 = rng.gen_range(0., 100.0);
+        
+        
+        if meteorite < 2.0 {
             self.meteor.push(Meteor::new());
         };
         // self.ship_event(ctx);
-        let mut  i : usize = 0;
+        let mut k = 0;
         for elem in self.fire.iter_mut() {
-            i += 1;
-            if elem.Ball.y > -SHIP_DIM{
-                elem.Ball.y -= SHOTS;
+            // if elem.Ball.y > -SHIP_DIM{
+            //     elem.Ball.y -= SHOTS;
+            // }
+            let mut test = 0;
+            let mut meteorite_x: Vec<Option<&i32>> = Vec::new();
+            for test in 0..((SHIP_DIM / 2.0) as i32) {
+                let touched = obstacle.get(&((elem.Ball.x as i32 - test), (elem.Ball.y - SHOTS) as i32));
+                meteorite_x.push(touched);
             }
-           
+            for test in 0..((SHIP_DIM / 2.0) as i32) {
+                let touched = obstacle.get(&((elem.Ball.x as i32 + test), (elem.Ball.y - SHOTS) as i32));
+                meteorite_x.push(touched);
+            }
+            for trying in meteorite_x {
+                match trying {
+                    Some(_k) => {
+                        println!("your shot touched the asteroid");
+                        elem.Ball.y -= SHOTS;
+                    },
+                    None => {
+                        shot.remove(&(elem.Ball.x as i32, elem.Ball.y as i32));
+                        elem.Ball.y -= SHOTS;
+                        shot.insert((elem.Ball.x as i32, elem.Ball.y as i32), k);
+                    }
+                }
+                j += 1;
+            }
+
         }
+
         for elem in self.meteor.iter_mut() {
             if elem.rock.y < SCREEN_HEIGHT {
                 elem.rock.y += SHOTS;
             }
         }
+
+        shot.clear();
+        obstacle.clear();
+
         Ok(())
     }
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
