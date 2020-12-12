@@ -20,14 +20,14 @@ const SCREEN_HEIGHT: f32 = 600.;
 const SHIP_DIM: f32 = 25.;
 const SPEED: f32 = 8.0;
 
-const SHOTS: f32 = 5.;
+const SHOTS: f32 = 2.;
 struct FireShot {
     Ball: Rect,
     life : bool
 }
 struct Meteor {
     rock: Rect,
-    lifetime: bool,
+    life: bool,
 }
 struct MainState {
     ship: Rect,
@@ -41,7 +41,7 @@ impl Meteor {
         let rando: f32 = rng.gen_range(0.0, SCREEN_WIDTH);
         Meteor {
             rock: Rect::new(rando, -SHIP_DIM, SHIP_DIM, SHIP_DIM),
-            lifetime: true,
+            life: true,
         }
     }
 }
@@ -70,8 +70,21 @@ impl MainState {
 
     fn clear_dead_elem(&mut self) {
         self.fire.retain(|s| s.life == true);
+        self.meteor.retain(|s| s.life == true);
     }
 
+    fn collision(&mut self){
+        for shot in self.fire.iter_mut(){
+            for rock in self.meteor.iter_mut(){
+                if shot.Ball.overlaps(&rock.rock){
+                    println!("collision");
+                    shot.life = false;
+                    rock.life = false;
+                }
+            }
+
+        }
+    }
     // fn ship_event(&mut self, ctx: &Context) {
     //     if is_key_pressed(ctx, KeyCode::Right) {
     //         if self.ship.right() < SCREEN_WIDTH {
@@ -89,6 +102,10 @@ impl MainState {
     //         println!("{}", self.fire.len());
     //     }
     // }
+    fn create_meteor(&mut self){
+        let met = Meteor::new();
+        self.meteor.push(met);
+    }
 
     fn draw_elem(&mut self, ctx: &mut Context) {
         for elem in self.fire.iter_mut() {
@@ -125,15 +142,11 @@ impl FireShot {
 
 impl EventHandler for MainState {
     fn update(&mut self, ctx: &mut Context) -> GameResult {
-        let mut rng = rand::thread_rng();
-        let meteor: f32 = rng.gen_range(0., 100.0);
-        if meteor < 2.0 {
-            self.meteor.push(Meteor::new());
-        };
+       if self.meteor.len() < 3{
+        self.create_meteor();
+       }
         // self.ship_event(ctx);
-        let mut  i : usize = 0;
         for elem in self.fire.iter_mut() {
-            i += 1;
             if elem.Ball.y > 0.0{
                 elem.Ball.y -= SHOTS;
             }else if elem.Ball.y == 0.0{
@@ -141,11 +154,16 @@ impl EventHandler for MainState {
             }
            
         }
-        for elem in self.meteor.iter_mut() {
-            if elem.rock.y < SCREEN_HEIGHT {
-                elem.rock.y += SHOTS;
+        for rock in self.meteor.iter_mut() {
+            if rock.rock.y < SCREEN_HEIGHT {
+                rock.rock.y += SHOTS;
+
+            }
+            if rock.rock.y >= SCREEN_HEIGHT{
+                rock.life  = false;
             }
         }
+         self.collision();
         self.clear_dead_elem();
         Ok(())
     }
