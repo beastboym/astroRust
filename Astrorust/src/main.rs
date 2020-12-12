@@ -23,6 +23,7 @@ const SPEED: f32 = 8.0;
 const SHOTS: f32 = 5.;
 struct FireShot {
     Ball: Rect,
+    life : bool
 }
 struct Meteor {
     rock: Rect,
@@ -61,9 +62,14 @@ impl MainState {
     fn new_shot(&mut self, x: f32, y: f32) {
         let pew = FireShot {
             Ball: Rect::new(x, y, 10.0, 10.0),
+            life : true
         };
         self.fire.push(pew)
         
+    }
+
+    fn clear_dead_elem(&mut self) {
+        self.fire.retain(|s| s.life == true);
     }
 
     // fn ship_event(&mut self, ctx: &Context) {
@@ -112,6 +118,7 @@ impl FireShot {
     fn new() -> Self {
         FireShot {
             Ball: Rect::new(0.0, 0.0, 10.0, 10.0),
+            life: true
         }
     }
 }
@@ -127,8 +134,10 @@ impl EventHandler for MainState {
         let mut  i : usize = 0;
         for elem in self.fire.iter_mut() {
             i += 1;
-            if elem.Ball.y > -SHIP_DIM{
+            if elem.Ball.y > 0.0{
                 elem.Ball.y -= SHOTS;
+            }else if elem.Ball.y == 0.0{
+                elem.life = false;
             }
            
         }
@@ -137,6 +146,7 @@ impl EventHandler for MainState {
                 elem.rock.y += SHOTS;
             }
         }
+        self.clear_dead_elem();
         Ok(())
     }
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
