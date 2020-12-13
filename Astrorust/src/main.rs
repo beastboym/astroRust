@@ -35,6 +35,8 @@ struct MainState {
     fire: Vec<FireShot>,
     meteor: Vec<Meteor>,
     score: u32,
+    level: u32,
+    carole : bool
 }
 
 impl Meteor {
@@ -59,6 +61,8 @@ impl MainState {
             fire: Vec::new(),
             meteor: Vec::new(),
             score: 0,
+            level:1,
+            carole: false,
         }
     }
 
@@ -76,16 +80,24 @@ impl MainState {
         self.meteor.retain(|s| s.life == true);
     }
 
-    fn Destroy(&mut self){
+    fn destroy(&mut self){
         for shot in self.fire.iter_mut(){
             for rock in self.meteor.iter_mut(){
                 if shot.Ball.overlaps(&rock.rock){
-                    println!("Destroy");
+                    println!("destroy");
                     shot.life = false;
                     rock.life = false;
                     self.score += 1;
                 }
+               
             }
+
+        }
+    }
+    fn game_over(&self,ctx:&mut Context){
+        if self.carole == true{
+            event::quit(ctx);
+            println!("dead");
 
         }
     }
@@ -166,9 +178,13 @@ impl EventHandler for MainState {
             if rock.rock.y >= SCREEN_HEIGHT{
                 rock.life  = false;
             }
+            if rock.rock.overlaps(&self.ship){
+                self.carole = true;
+            }
         }
-         self.Destroy();
+         self.destroy();
         self.clear_dead_elem();
+        self.game_over(ctx);
         Ok(())
     }
     fn draw(&mut self, ctx: &mut Context) -> GameResult {

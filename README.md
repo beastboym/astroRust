@@ -11,7 +11,7 @@ Plan :
 - Ajout des collisions et partie perdue si collision
 - ~~Ajout de tir pour le vaisseau~~
 - ~~Destruction d'un obstacle si le tir fait but~~
-- Ajout d'une barre de vie (3 collisions pour perdre la partie)
+- ~~Ajout d'une barre de vie (3 collisions pour perdre la partie)~~
 - ~~Système de point~~
 - Graphisme (apparence du vaisseau, des obstacles, des tirs, background)
 
