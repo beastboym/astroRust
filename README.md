@@ -8,7 +8,7 @@ Plan :
 - ~~Faire une fenêtre vide~~
 - ~~Ajouter un carré et réussir à le faire bouger dans les limites de la fenêtre~~
 - ~~Ajouter des obstacles qui tombent du haut de la fenêtre depuis des positions aléatoires~~
-- Ajout des collisions et partie perdue si collision
+- ~~Ajout des collisions et partie perdue si collision~~
 - ~~Ajout de tir pour le vaisseau~~
 - ~~Destruction d'un obstacle si le tir fait but~~
 - ~~Ajout d'une barre de vie (3 collisions pour perdre la partie)~~
