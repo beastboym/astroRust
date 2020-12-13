@@ -1,5 +1,5 @@
 #![allow(warnings)]
-use ggez::graphics::clear;
+use ggez::{graphics::clear, mint::Point2, nalgebra::Point};
 use ggez::graphics::present;
 use ggez::graphics::Color;
 use ggez::graphics::Rect;
@@ -13,6 +13,7 @@ use ggez::{event::KeyMods, graphics};
 use ggez::{Context, ContextBuilder, GameResult};
 use rand::Rng;
 type Vector = ggez::mint::Vector2<f32>;
+
 
 const SCREEN_WIDTH: f32 = 600.;
 const SCREEN_HEIGHT: f32 = 600.;
@@ -33,6 +34,7 @@ struct MainState {
     ship: Rect,
     fire: Vec<FireShot>,
     meteor: Vec<Meteor>,
+    score: u32,
 }
 
 impl Meteor {
@@ -56,6 +58,7 @@ impl MainState {
             ),
             fire: Vec::new(),
             meteor: Vec::new(),
+            score: 0,
         }
     }
 
@@ -73,13 +76,14 @@ impl MainState {
         self.meteor.retain(|s| s.life == true);
     }
 
-    fn collision(&mut self){
+    fn Destroy(&mut self){
         for shot in self.fire.iter_mut(){
             for rock in self.meteor.iter_mut(){
                 if shot.Ball.overlaps(&rock.rock){
-                    println!("collision");
+                    println!("Destroy");
                     shot.life = false;
                     rock.life = false;
+                    self.score += 1;
                 }
             }
 
@@ -163,7 +167,7 @@ impl EventHandler for MainState {
                 rock.life  = false;
             }
         }
-         self.collision();
+         self.Destroy();
         self.clear_dead_elem();
         Ok(())
     }
@@ -178,6 +182,11 @@ impl EventHandler for MainState {
         .unwrap();
         graphics::draw(ctx, &ship_draw, graphics::DrawParam::default()).unwrap();
         self.draw_elem(ctx);
+
+        let score = graphics::Text::new(format!("Score : {}",self.score));
+        let coord = [0.0 + score.width(ctx) as f32,20.0];
+        let params = graphics::DrawParam::default().dest(coord);
+        graphics::draw(ctx, &score, params).expect("error drawing scoreboard text");
         present(ctx).unwrap();
         Ok(())
     }
