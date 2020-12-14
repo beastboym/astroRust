@@ -20,7 +20,7 @@ const SCREEN_HEIGHT: f32 = 600.;
 const SHIP_DIM: f32 = 25.;
 const SPEED: f32 = 8.0;
 
-const SHOTS: f32 = 2.;
+const SHOTS: f32 = 3.;
 struct FireShot {
     Ball: Rect,
     life: bool,
@@ -49,6 +49,16 @@ impl Meteor {
         }
     }
 }
+fn draw_e(elem: Rect, ctx: &mut Context){
+    let ship_draw = graphics::Mesh::new_rectangle(
+        ctx,
+        graphics::DrawMode::fill(),
+        elem,
+        Color::new(1.0, 1.0, 1.0, 1.0),
+    )
+    .unwrap();
+    graphics::draw(ctx, &ship_draw, graphics::DrawParam::default()).unwrap();
+}
 impl MainState {
     fn new() -> Self {
         MainState {
@@ -60,7 +70,7 @@ impl MainState {
             ),
             fire: Vec::new(),
             meteor: Vec::new(),
-            nb_rocks:3,
+            nb_rocks: 3,
             score: 0,
             level: 1,
             carole: false,
@@ -109,35 +119,21 @@ impl MainState {
                 self.ship.x -= SPEED;
             }
         }
-
-       
     }
     fn create_meteor(&mut self) {
-        if self.meteor.len() < self.nb_rocks as usize{
-        let met = Meteor::new();
-        self.meteor.push(met);}
+        if self.meteor.len() < self.nb_rocks as usize {
+            let met = Meteor::new();
+            self.meteor.push(met);
+        }
     }
-    
+   
     fn draw_elem(&mut self, ctx: &mut Context) {
+        draw_e(self.ship, ctx);
         for elem in self.fire.iter_mut() {
-            let ship_draw = graphics::Mesh::new_rectangle(
-                ctx,
-                graphics::DrawMode::fill(),
-                elem.Ball,
-                Color::new(1.0, 1.0, 1.0, 1.0),
-            )
-            .unwrap();
-            graphics::draw(ctx, &ship_draw, graphics::DrawParam::default()).unwrap();
+            draw_e(elem.Ball,ctx);
         }
         for elem in self.meteor.iter_mut() {
-            let ship_draw = graphics::Mesh::new_rectangle(
-                ctx,
-                graphics::DrawMode::fill(),
-                elem.rock,
-                Color::new(1.0, 1.0, 1.0, 1.0),
-            )
-            .unwrap();
-            graphics::draw(ctx, &ship_draw, graphics::DrawParam::default()).unwrap();
+            draw_e(elem.rock,ctx);
         }
     }
 }
@@ -158,7 +154,8 @@ impl EventHandler for MainState {
         for elem in self.fire.iter_mut() {
             if elem.Ball.y > 0.0 {
                 elem.Ball.y -= SHOTS;
-            } else if elem.Ball.y == 0.0 {
+
+            } else if elem.Ball.y <= 0.0 {
                 elem.life = false;
             }
         }
@@ -166,7 +163,7 @@ impl EventHandler for MainState {
             if rock.rock.y < SCREEN_HEIGHT {
                 rock.rock.y += SHOTS;
             }
-            if rock.rock.y >= SCREEN_HEIGHT {
+            else if rock.rock.y >= SCREEN_HEIGHT {
                 rock.life = false;
             }
             if rock.rock.overlaps(&self.ship) {
@@ -180,21 +177,14 @@ impl EventHandler for MainState {
     }
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
         clear(ctx, Color::new(0.0, 0.0, 0.0, 1.0));
-        let ship_draw = graphics::Mesh::new_rectangle(
-            ctx,
-            graphics::DrawMode::fill(),
-            self.ship,
-            Color::new(1.0, 1.0, 1.0, 1.0),
-        )
-        .unwrap();
-        graphics::draw(ctx, &ship_draw, graphics::DrawParam::default()).unwrap();
+        
         self.draw_elem(ctx);
 
         let score = graphics::Text::new(format!("Score : {}", self.score));
         let coord = [0.0 + score.width(ctx) as f32, 20.0];
         let params = graphics::DrawParam::default().dest(coord);
-        graphics::draw(ctx, &score, params).expect("error drawing scoreboard text");
-        present(ctx).unwrap();
+        graphics::draw(ctx, &score, params)?;
+        present(ctx)?;
         Ok(())
     }
     fn key_down_event(
@@ -219,8 +209,8 @@ fn main() -> GameResult {
     let (ctx, event_loop) = &mut ContextBuilder::new("AstroRust", "Daouda, Claire")
         .window_mode(ggez::conf::WindowMode::default().dimensions(SCREEN_WIDTH, SCREEN_HEIGHT))
         .window_setup(WindowSetup::default().title("AstrooooRuuuust"))
-        .build()
-        .unwrap();
+        .build()?;
+        
     let main_state = &mut MainState::new();
     event::run(ctx, event_loop, main_state)
 }
