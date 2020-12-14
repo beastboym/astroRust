@@ -13,7 +13,7 @@ use ggez::{graphics::clear, mint::Point2, nalgebra::Point};
 use ggez::{Context, ContextBuilder, GameResult};
 use rand::Rng;
 type Vector = ggez::mint::Vector2<f32>;
-
+const DESIRED_FPS: u32 = 60;
 const SCREEN_WIDTH: f32 = 600.;
 const SCREEN_HEIGHT: f32 = 600.;
 
@@ -161,6 +161,8 @@ impl FireShot {
 
 impl EventHandler for MainState {
     fn update(&mut self, ctx: &mut Context) -> GameResult {
+        while ggez::timer::check_update_time(ctx, DESIRED_FPS)
+        {
         self.create_meteor();
         self.ship_event(ctx);
         for elem in self.fire.iter_mut() {
@@ -182,7 +184,7 @@ impl EventHandler for MainState {
                 self.carole = true;
             }
         }
-
+    }
         self.destroy();
         self.clear_dead_elem();
         self.level_up();
