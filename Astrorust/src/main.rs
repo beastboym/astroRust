@@ -146,6 +146,7 @@ impl MainState {
             self.nb_rocks += 1;
             self.level +=1;
             self.speed += 0.5;
+            self.score = 0;
         }
     }
 }
@@ -209,12 +210,11 @@ impl EventHandler for MainState {
         present(ctx)?;
         Ok(())
     }
-    fn key_down_event(
+    fn key_up_event(
         &mut self,
         ctx: &mut Context,
         keycode: KeyCode,
         _keymod: KeyMods,
-        _repeat: bool,
     ) {
         match keycode {
             KeyCode::Space => {
