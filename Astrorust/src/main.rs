@@ -37,6 +37,7 @@ struct MainState {
     score: u32,
     level: u32,
     carole: bool,
+    speed : f32,
 }
 
 impl Meteor {
@@ -55,6 +56,7 @@ fn draw_e(elem: Rect, ctx: &mut Context){
         graphics::DrawMode::fill(),
         elem,
         Color::new(1.0, 1.0, 1.0, 1.0),
+        
     )
     .unwrap();
     graphics::draw(ctx, &ship_draw, graphics::DrawParam::default()).unwrap();
@@ -74,6 +76,7 @@ impl MainState {
             score: 0,
             level: 1,
             carole: false,
+            speed : SHOTS,
         }
     }
 
@@ -134,6 +137,15 @@ impl MainState {
         }
         for elem in self.meteor.iter_mut() {
             draw_e(elem.rock,ctx);
+            
+        }
+
+    }
+    fn level_up(&mut self){
+        if self.score == self.nb_rocks{
+            self.nb_rocks += 1;
+            self.level +=1;
+            self.speed += 0.5;
         }
     }
 }
@@ -161,7 +173,7 @@ impl EventHandler for MainState {
         }
         for rock in self.meteor.iter_mut() {
             if rock.rock.y < SCREEN_HEIGHT {
-                rock.rock.y += SHOTS;
+                rock.rock.y += self.speed;
             }
             else if rock.rock.y >= SCREEN_HEIGHT {
                 rock.life = false;
@@ -170,8 +182,10 @@ impl EventHandler for MainState {
                 self.carole = true;
             }
         }
+
         self.destroy();
         self.clear_dead_elem();
+        self.level_up();
         self.game_over(ctx);
         Ok(())
     }
@@ -184,6 +198,11 @@ impl EventHandler for MainState {
         let coord = [0.0 + score.width(ctx) as f32, 20.0];
         let params = graphics::DrawParam::default().dest(coord);
         graphics::draw(ctx, &score, params)?;
+
+        let level = graphics::Text::new(format!("Level : {}", self.level));
+        let lvl_coord = [0.0 + score.width(ctx) as f32, 40.0];
+        let params = graphics::DrawParam::default().dest(lvl_coord);
+        graphics::draw(ctx, &level, params)?;
         present(ctx)?;
         Ok(())
     }
