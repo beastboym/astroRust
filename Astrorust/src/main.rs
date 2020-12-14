@@ -183,6 +183,7 @@ impl EventHandler for MainState {
             if rock.rock.overlaps(&self.ship) {
                 self.carole = true;
             }
+            println!("FPS: {:?}", ggez::timer::fps(ctx));
         }
     }
         self.destroy();
