@@ -50,25 +50,17 @@ impl Meteor {
         }
     }
 }
-fn draw_e(elem: Rect, ctx: &mut Context, texture: &str){
-    // let ship_draw = graphics::Mesh::new_rectangle(
-    //     ctx,
-    //     graphics::DrawMode::fill(),
-    //     elem,
-    //     Color::new(1.0, 1.0, 1.0, 1.0),
-        
-    // )
-    // .unwrap();
-    let ship_draw = graphics::MeshBuilder::new()
-    .rectangle(
+fn draw_e(elem: Rect, ctx: &mut Context, path: &str){
+    let ship_draw = graphics::Mesh::new_rectangle(
+        ctx,
         graphics::DrawMode::fill(),
         elem,
-        Color::new(1., 1., 1., 1.)
+        Color::new(1.0, 1.0, 1.0, 1.0),
+        
     )
-    .texture(graphics::Image::new(ctx, texture).unwrap())
-    .build(ctx)
     .unwrap();
-    graphics::draw(ctx, &ship_draw, graphics::DrawParam::default()).unwrap();
+    let texture: graphics::Image = graphics::Image::new(ctx, path).unwrap();
+    graphics::draw(ctx, &texture, graphics::DrawParam::default().dest(elem.point())).unwrap();
 }
 
 impl MainState {
@@ -149,7 +141,6 @@ impl MainState {
         //     draw_e(elem.rock,ctx);
             
         // }
-
     }
     fn level_up(&mut self){
         if self.score == self.nb_rocks{
