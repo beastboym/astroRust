@@ -1,0 +1,13 @@
+/home/clozed/astrorust/Astrorust/target/debug/deps/claxon-c52003f8a148117d.rmeta: /home/clozed/.cargo/registry/src/github.com-1ecc6299db9ec823/claxon-0.4.3/src/lib.rs /home/clozed/.cargo/registry/src/github.com-1ecc6299db9ec823/claxon-0.4.3/src/crc.rs /home/clozed/.cargo/registry/src/github.com-1ecc6299db9ec823/claxon-0.4.3/src/error.rs /home/clozed/.cargo/registry/src/github.com-1ecc6299db9ec823/claxon-0.4.3/src/frame.rs /home/clozed/.cargo/registry/src/github.com-1ecc6299db9ec823/claxon-0.4.3/src/input.rs /home/clozed/.cargo/registry/src/github.com-1ecc6299db9ec823/claxon-0.4.3/src/metadata.rs /home/clozed/.cargo/registry/src/github.com-1ecc6299db9ec823/claxon-0.4.3/src/subframe.rs
+
+/home/clozed/astrorust/Astrorust/target/debug/deps/libclaxon-c52003f8a148117d.rlib: /home/clozed/.cargo/registry/src/github.com-1ecc6299db9ec823/claxon-0.4.3/src/lib.rs /home/clozed/.cargo/registry/src/github.com-1ecc6299db9ec823/claxon-0.4.3/src/crc.rs /home/clozed/.cargo/registry/src/github.com-1ecc6299db9ec823/claxon-0.4.3/src/error.rs /home/clozed/.cargo/registry/src/github.com-1ecc6299db9ec823/claxon-0.4.3/src/frame.rs /home/clozed/.cargo/registry/src/github.com-1ecc6299db9ec823/claxon-0.4.3/src/input.rs /home/clozed/.cargo/registry/src/github.com-1ecc6299db9ec823/claxon-0.4.3/src/metadata.rs /home/clozed/.cargo/registry/src/github.com-1ecc6299db9ec823/claxon-0.4.3/src/subframe.rs
+
+/home/clozed/astrorust/Astrorust/target/debug/deps/claxon-c52003f8a148117d.d: /home/clozed/.cargo/registry/src/github.com-1ecc6299db9ec823/claxon-0.4.3/src/lib.rs /home/clozed/.cargo/registry/src/github.com-1ecc6299db9ec823/claxon-0.4.3/src/crc.rs /home/clozed/.cargo/registry/src/github.com-1ecc6299db9ec823/claxon-0.4.3/src/error.rs /home/clozed/.cargo/registry/src/github.com-1ecc6299db9ec823/claxon-0.4.3/src/frame.rs /home/clozed/.cargo/registry/src/github.com-1ecc6299db9ec823/claxon-0.4.3/src/input.rs /home/clozed/.cargo/registry/src/github.com-1ecc6299db9ec823/claxon-0.4.3/src/metadata.rs /home/clozed/.cargo/registry/src/github.com-1ecc6299db9ec823/claxon-0.4.3/src/subframe.rs
+
+/home/clozed/.cargo/registry/src/github.com-1ecc6299db9ec823/claxon-0.4.3/src/lib.rs:
+/home/clozed/.cargo/registry/src/github.com-1ecc6299db9ec823/claxon-0.4.3/src/crc.rs:
+/home/clozed/.cargo/registry/src/github.com-1ecc6299db9ec823/claxon-0.4.3/src/error.rs:
+/home/clozed/.cargo/registry/src/github.com-1ecc6299db9ec823/claxon-0.4.3/src/frame.rs:
+/home/clozed/.cargo/registry/src/github.com-1ecc6299db9ec823/claxon-0.4.3/src/input.rs:
+/home/clozed/.cargo/registry/src/github.com-1ecc6299db9ec823/claxon-0.4.3/src/metadata.rs:
+/home/clozed/.cargo/registry/src/github.com-1ecc6299db9ec823/claxon-0.4.3/src/subframe.rs:

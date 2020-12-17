@@ -1,0 +1,1 @@
+/home/clozed/astrorust/Astrorust/target/debug/Astrorust: /home/clozed/astrorust/Astrorust/src/main.rs README.md docs/guides/GenerativeArt.md docs/guides/GenerativeArt.md.skt.md docs/guides/HelloGgez.md docs/guides/HelloGgez.md.skt.md

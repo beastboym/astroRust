@@ -50,17 +50,27 @@ impl Meteor {
         }
     }
 }
-fn draw_e(elem: Rect, ctx: &mut Context){
-    let ship_draw = graphics::Mesh::new_rectangle(
-        ctx,
+fn draw_e(elem: Rect, ctx: &mut Context, texture: &str){
+    // let ship_draw = graphics::Mesh::new_rectangle(
+    //     ctx,
+    //     graphics::DrawMode::fill(),
+    //     elem,
+    //     Color::new(1.0, 1.0, 1.0, 1.0),
+        
+    // )
+    // .unwrap();
+    let ship_draw = graphics::MeshBuilder::new()
+    .rectangle(
         graphics::DrawMode::fill(),
         elem,
-        Color::new(1.0, 1.0, 1.0, 1.0),
-        
+        Color::new(1., 1., 1., 1.)
     )
+    .texture(graphics::Image::new(ctx, texture).unwrap())
+    .build(ctx)
     .unwrap();
     graphics::draw(ctx, &ship_draw, graphics::DrawParam::default()).unwrap();
 }
+
 impl MainState {
     fn new() -> Self {
         MainState {
@@ -131,14 +141,14 @@ impl MainState {
     }
    
     fn draw_elem(&mut self, ctx: &mut Context) {
-        draw_e(self.ship, ctx);
-        for elem in self.fire.iter_mut() {
-            draw_e(elem.Ball,ctx);
-        }
-        for elem in self.meteor.iter_mut() {
-            draw_e(elem.rock,ctx);
+        draw_e(self.ship, ctx, "/ship.png");
+        // for elem in self.fire.iter_mut() {
+        //     draw_e(elem.Ball,ctx);
+        // }
+        // for elem in self.meteor.iter_mut() {
+        //     draw_e(elem.rock,ctx);
             
-        }
+        // }
 
     }
     fn level_up(&mut self){
