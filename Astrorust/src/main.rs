@@ -19,6 +19,9 @@ const SCREEN_HEIGHT: f32 = 600.;
 
 const SHIP_DIM: f32 = 25.;
 const SPEED: f32 = 8.0;
+const SHOT_DIMX: f32 = 20.;
+const SHOT_DIMY: f32 = 40.;
+const METE_DIM: f32 = 65.;
 
 const SHOTS: f32 = 3.;
 struct FireShot {
@@ -45,7 +48,7 @@ impl Meteor {
         let mut rng = rand::thread_rng();
         let rando: f32 = rng.gen_range(0.0, SCREEN_WIDTH);
         Meteor {
-            rock: Rect::new(rando, -SHIP_DIM, SHIP_DIM, SHIP_DIM),
+            rock: Rect::new(rando, -SHIP_DIM, METE_DIM, METE_DIM),
             life: true,
         }
     }
@@ -84,7 +87,7 @@ impl MainState {
 
     fn new_shot(&mut self, x: f32, y: f32) {
         let pew = FireShot {
-            Ball: Rect::new(x, y, 10.0, 10.0),
+            Ball: Rect::new(x, y, SHOT_DIMX, SHOT_DIMY),
             life: true,
         };
         self.fire.push(pew)
