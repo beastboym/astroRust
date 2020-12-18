@@ -134,13 +134,12 @@ impl MainState {
    
     fn draw_elem(&mut self, ctx: &mut Context) {
         draw_e(self.ship, ctx, "/ship.png");
-        // for elem in self.fire.iter_mut() {
-        //     draw_e(elem.Ball,ctx);
-        // }
-        // for elem in self.meteor.iter_mut() {
-        //     draw_e(elem.rock,ctx);
-            
-        // }
+        for elem in self.fire.iter_mut() {
+            draw_e(elem.Ball,ctx, "/laser_shot.png");
+        }
+        for elem in self.meteor.iter_mut() {
+            draw_e(elem.rock,ctx, "/meteorites.png");
+        }
     }
     fn level_up(&mut self){
         if self.score == self.nb_rocks{
@@ -232,6 +231,7 @@ fn main() -> GameResult {
     let (ctx, event_loop) = &mut ContextBuilder::new("AstroRust", "Daouda, Claire")
         .window_mode(ggez::conf::WindowMode::default().dimensions(SCREEN_WIDTH, SCREEN_HEIGHT))
         .window_setup(WindowSetup::default().title("AstrooooRuuuust"))
+        .add_resource_path("./src")
         .build()?;
         
     let main_state = &mut MainState::new();
