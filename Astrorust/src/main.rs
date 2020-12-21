@@ -21,8 +21,14 @@ const SHIP_DIM: f32 = 25.;
 const SPEED: f32 = 8.0;
 
 const SHOTS: f32 = 3.;
+
+enum actor {
+    Ship,
+    Meteor,
+    Shot,
+}
 struct FireShot {
-    Ball: Rect,
+    ball: Rect,
     life: bool,
 }
 struct Meteor {
@@ -37,7 +43,7 @@ struct MainState {
     score: u32,
     level: u32,
     carole: bool,
-    speed : f32,
+    speed: f32,
 }
 
 impl Meteor {
@@ -50,13 +56,12 @@ impl Meteor {
         }
     }
 }
-fn draw_e(elem: Rect, ctx: &mut Context){
+fn draw_e(elem: Rect, ctx: &mut Context) {
     let ship_draw = graphics::Mesh::new_rectangle(
         ctx,
         graphics::DrawMode::fill(),
         elem,
         Color::new(1.0, 1.0, 1.0, 1.0),
-        
     )
     .unwrap();
     graphics::draw(ctx, &ship_draw, graphics::DrawParam::default()).unwrap();
@@ -76,13 +81,13 @@ impl MainState {
             score: 0,
             level: 1,
             carole: false,
-            speed : SHOTS,
+            speed: SHOTS,
         }
     }
 
     fn new_shot(&mut self, x: f32, y: f32) {
         let pew = FireShot {
-            Ball: Rect::new(x, y, 10.0, 10.0),
+            ball: Rect::new(x, y, 10.0, 10.0),
             life: true,
         };
         self.fire.push(pew)
@@ -96,7 +101,7 @@ impl MainState {
     fn destroy(&mut self) {
         for shot in self.fire.iter_mut() {
             for rock in self.meteor.iter_mut() {
-                if shot.Ball.overlaps(&rock.rock) {
+                if shot.ball.overlaps(&rock.rock) {
                     println!("destroy");
                     shot.life = false;
                     rock.life = false;
@@ -129,22 +134,19 @@ impl MainState {
             self.meteor.push(met);
         }
     }
-   
     fn draw_elem(&mut self, ctx: &mut Context) {
         draw_e(self.ship, ctx);
         for elem in self.fire.iter_mut() {
-            draw_e(elem.Ball,ctx);
+            draw_e(elem.ball, ctx);
         }
         for elem in self.meteor.iter_mut() {
-            draw_e(elem.rock,ctx);
-            
+            draw_e(elem.rock, ctx);
         }
-
     }
-    fn level_up(&mut self){
-        if self.score == self.nb_rocks{
+    fn level_up(&mut self) {
+        if self.score == self.nb_rocks {
             self.nb_rocks += 1;
-            self.level +=1;
+            self.level += 1;
             self.speed += 0.5;
             self.score = 0;
         }
@@ -154,7 +156,7 @@ impl MainState {
 impl FireShot {
     fn new() -> Self {
         FireShot {
-            Ball: Rect::new(0.0, 0.0, 10.0, 10.0),
+            ball: Rect::new(0.0, 0.0, 10.0, 10.0),
             life: true,
         }
     }
@@ -162,31 +164,28 @@ impl FireShot {
 
 impl EventHandler for MainState {
     fn update(&mut self, ctx: &mut Context) -> GameResult {
-        while ggez::timer::check_update_time(ctx, DESIRED_FPS)
-        {
-        self.create_meteor();
-        self.ship_event(ctx);
-        for elem in self.fire.iter_mut() {
-            if elem.Ball.y > 0.0 {
-                elem.Ball.y -= SHOTS;
-
-            } else if elem.Ball.y <= 0.0 {
-                elem.life = false;
+        while ggez::timer::check_update_time(ctx, DESIRED_FPS) {
+            self.create_meteor();
+            self.ship_event(ctx);
+            for elem in self.fire.iter_mut() {
+                if elem.ball.y > 0.0 {
+                    elem.ball.y -= SHOTS;
+                } else if elem.ball.y <= 0.0 {
+                    elem.life = false;
+                }
+            }
+            for rock in self.meteor.iter_mut() {
+                if rock.rock.y < SCREEN_HEIGHT {
+                    rock.rock.y += self.speed;
+                } else if rock.rock.y >= SCREEN_HEIGHT {
+                    rock.life = false;
+                }
+                if rock.rock.overlaps(&self.ship) {
+                    self.carole = true;
+                }
+                println!("FPS: {:?}", ggez::timer::fps(ctx));
             }
         }
-        for rock in self.meteor.iter_mut() {
-            if rock.rock.y < SCREEN_HEIGHT {
-                rock.rock.y += self.speed;
-            }
-            else if rock.rock.y >= SCREEN_HEIGHT {
-                rock.life = false;
-            }
-            if rock.rock.overlaps(&self.ship) {
-                self.carole = true;
-            }
-            println!("FPS: {:?}", ggez::timer::fps(ctx));
-        }
-    }
         self.destroy();
         self.clear_dead_elem();
         self.level_up();
@@ -195,7 +194,6 @@ impl EventHandler for MainState {
     }
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
         clear(ctx, Color::new(0.0, 0.0, 0.0, 1.0));
-        
         self.draw_elem(ctx);
 
         let score = graphics::Text::new(format!("Score : {}", self.score));
@@ -210,12 +208,7 @@ impl EventHandler for MainState {
         present(ctx)?;
         Ok(())
     }
-    fn key_up_event(
-        &mut self,
-        ctx: &mut Context,
-        keycode: KeyCode,
-        _keymod: KeyMods,
-    ) {
+    fn key_up_event(&mut self, ctx: &mut Context, keycode: KeyCode, _keymod: KeyMods) {
         match keycode {
             KeyCode::Space => {
                 self.new_shot(self.ship.x, self.ship.y);
@@ -232,7 +225,6 @@ fn main() -> GameResult {
         .window_mode(ggez::conf::WindowMode::default().dimensions(SCREEN_WIDTH, SCREEN_HEIGHT))
         .window_setup(WindowSetup::default().title("AstrooooRuuuust"))
         .build()?;
-        
     let main_state = &mut MainState::new();
     event::run(ctx, event_loop, main_state)
 }
