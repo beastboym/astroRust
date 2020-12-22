@@ -24,238 +24,92 @@ const SHOT_DIMY: f32 = 40.;
 const METE_DIM: f32 = 50.;
 
 const SHOTS: f32 = 3.;
-struct FireShot {
-    Ball: Rect,
-    life: bool,
+mod game;
+mod main_menu;
+mod function;
+struct MainState{
+    game_scene : game::GameScene,
+    main_menu : main_menu::main_menu,
+    switch_scene : bool,
 }
-struct Meteor {
-    rock: Rect,
-    life: bool,
-}
-struct Sound{
-    shot_sound : audio::Source,
-    collision : audio::Source,
-    game_over : audio::Source,
-    bg_loop : audio::Source,
-}
-impl Sound{
-    fn default(ctx: &mut Context)->Self{
-        Sound{
-            shot_sound : audio::Source::new(ctx, "/pew.wav").unwrap(),
-            collision : audio::Source::new(ctx, "/collision.wav").unwrap(),
-            game_over : audio::Source::new(ctx, "/game_over.wav").unwrap(),
-            bg_loop : audio::Source::new(ctx, "/bg_loop.mp3").unwrap(),
+
+impl MainState{
+    fn new(ctx : &mut Context)->Self{
+        MainState{
+            game_scene : game::GameScene::new(ctx),
+            main_menu : main_menu::main_menu::new(),
+            switch_scene : false,
         }
     }
 }
-
-
-struct MainState {
-    ship: Rect,
-    fire: Vec<FireShot>,
-    meteor: Vec<Meteor>,
-    nb_rocks: u32,
-    score: u32,
-    level: u32,
-    carole: bool,
-    speed: f32,
-    sound: Sound,
-    background : graphics::Image,
-    
-}
-
-impl Meteor {
-    fn new() -> Self {
-        let mut rng = rand::thread_rng();
-        let rando: f32 = rng.gen_range(0.0, SCREEN_WIDTH);
-        Meteor {
-            rock: Rect::new(rando, -SHIP_DIM, METE_DIM, METE_DIM),
-            life: true,
-        }
-    }
-}
-fn draw_e(elem: Rect, ctx: &mut Context, path: &str) {
-    let ship_draw = graphics::Mesh::new_rectangle(
-        ctx,
-        graphics::DrawMode::fill(),
-        elem,
-        Color::new(1.0, 1.0, 1.0, 1.0),
-    )
-    .unwrap();
-    let texture: graphics::Image = graphics::Image::new(ctx, path).unwrap();
-    graphics::draw(
-        ctx,
-        &texture,
-        graphics::DrawParam::default().dest(elem.point()),
-    )
-    .unwrap();
-}
-
-impl MainState {
-    fn new(ctx: &mut Context) -> Self {
-        MainState {
-            ship: Rect::new(
-                SCREEN_WIDTH / 2. - SHIP_DIM / 2.0,
-                SCREEN_HEIGHT - SHIP_DIM * 2.0,
-                SHIP_DIM,
-                SHIP_DIM,
-            ),
-            fire: Vec::new(),
-            meteor: Vec::new(),
-            nb_rocks: 3,
-            score: 0,
-            level: 1,
-            carole: false,
-            speed: SHOTS,
-            sound: Sound::default(ctx),
-            background: graphics::Image::new(ctx,"/bryan-goff1.jpg").unwrap(),
-        }
-    }
-
-    fn new_shot(&mut self, x: f32, y: f32) {
-        let pew = FireShot {
-            Ball: Rect::new(x, y, SHOT_DIMX, SHOT_DIMY),
-            life: true,
-        };
-        self.fire.push(pew);
-        let _ = self.sound.shot_sound.play();
-    }
-
-    fn clear_dead_elem(&mut self) {
-        self.fire.retain(|s| s.life == true);
-        self.meteor.retain(|s| s.life == true);
-    }
-
-    fn destroy(&mut self) {
-        for shot in self.fire.iter_mut() {
-            for rock in self.meteor.iter_mut() {
-                if shot.Ball.overlaps(&rock.rock) {
-                    println!("destroy");
-                    shot.life = false;
-                    rock.life = false;
-                    self.score += 1;
-                    let _ = self.sound.collision.play();
-                }
-            }
-        }
-    }
-    fn game_over(&mut self, ctx: &mut Context) {
-        if self.carole == true {
-            let _ = self.sound.game_over.play();
-            event::quit(ctx);
-            self.carole = false;
-            println!("dead");
-        }
-    }
-    fn ship_event(&mut self, ctx: &Context) {
-        if is_key_pressed(ctx, KeyCode::Right) {
-            if self.ship.right() < SCREEN_WIDTH {
-                self.ship.x += SPEED;
-            }
-        }
-        if is_key_pressed(ctx, KeyCode::Left) {
-            if self.ship.left() > 0.0 {
-                self.ship.x -= SPEED;
-            }
-        }
-    }
-    fn create_meteor(&mut self) {
-        if self.meteor.len() < self.nb_rocks as usize {
-            let met = Meteor::new();
-            self.meteor.push(met);
-        }
-    }
-    fn draw_elem(&mut self, ctx: &mut Context) {
-        draw_e(self.ship, ctx, "/ship.png");
-        for elem in self.fire.iter_mut() {
-            draw_e(elem.Ball, ctx, "/laser_shot1.png");
-        }
-        for elem in self.meteor.iter_mut() {
-            draw_e(elem.rock, ctx, "/meteor.png");
-        }
-    }
-    fn level_up(&mut self) {
-        if self.score == self.nb_rocks {
-            self.nb_rocks += 1;
-            self.level += 1;
-            self.speed += 0.5;
-            self.score = 0;
-            self.fire.retain(|s| s.life == false);
-            self.meteor.retain(|s| s.life == false);
-            // std::thread::sleep(std::time::Duration::from_millis(500));
-        }
-    }
-}
-
-impl FireShot {
-    fn new() -> Self {
-        FireShot {
-            Ball: Rect::new(0.0, 0.0, 10.0, 10.0),
-            life: true,
-        }
-    }
-}
-
 impl EventHandler for MainState {
     fn update(&mut self, ctx: &mut Context) -> GameResult {
-        if self.sound.bg_loop.playing() == false{
-            let _ = self.sound.bg_loop.play();
+        if self.game_scene.sound.bg_loop.playing() == false{
+            let _ = self.game_scene.sound.bg_loop.play();
         }
         while ggez::timer::check_update_time(ctx, DESIRED_FPS) {
-            self.create_meteor();
-            self.ship_event(ctx);
-            for elem in self.fire.iter_mut() {
+            self.game_scene.create_meteor();
+            self.game_scene.ship_event(ctx);
+            for elem in self.game_scene.fire.iter_mut() {
                 if elem.Ball.y > 0.0 {
                     elem.Ball.y -= SHOTS;
                 } else if elem.Ball.y <= 0.0 {
                     elem.life = false;
                 }
             }
-            for rock in self.meteor.iter_mut() {
+            for rock in self.game_scene.meteor.iter_mut() {
                 if rock.rock.y < SCREEN_HEIGHT {
-                    rock.rock.y += self.speed;
+                    rock.rock.y += self.game_scene.speed;
                 } else if rock.rock.y >= SCREEN_HEIGHT {
                     rock.life = false;
                 }
-                if rock.rock.overlaps(&self.ship) {
-                    self.carole = true;
+                if rock.rock.overlaps(&self.game_scene.ship) {
+                    self.game_scene.carole = true;
                 }
-                println!("FPS: {:?}", ggez::timer::fps(ctx));
+                // println!("FPS: {:?}", ggez::timer::fps(ctx));
             }
         }
-        self.destroy();
-        self.clear_dead_elem();
-        self.level_up();
-        self.game_over(ctx);
+        self.game_scene.destroy();
+        self.game_scene.clear_dead_elem();
+        self.game_scene.level_up();
+        self.game_scene.game_over(&mut self.switch_scene,ctx);
         Ok(())
     }
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
         clear(ctx, Color::new(0.0, 0.0, 0.0, 1.0));
         graphics::draw(
             ctx,
-            &self.background,
+            &self.game_scene.background,
             graphics::DrawParam::default(),
         )
         .unwrap();
-        self.draw_elem(ctx);
+        if self.switch_scene == true{
+        self.game_scene.draw_elem(ctx);
 
-        let score = graphics::Text::new(format!("Score : {}", self.score));
+        let score = graphics::Text::new(format!("Score : {}", self.game_scene.score));
         let coord = [0.0 + score.width(ctx) as f32, 20.0];
         let params = graphics::DrawParam::default().dest(coord);
         graphics::draw(ctx, &score, params)?;
 
-        let level = graphics::Text::new(format!("Level : {}", self.level));
+        let level = graphics::Text::new(format!("Level : {}", self.game_scene.level));
         let lvl_coord = [0.0 + score.width(ctx) as f32, 40.0];
         let params = graphics::DrawParam::default().dest(lvl_coord);
-        graphics::draw(ctx, &level, params)?;
+        graphics::draw(ctx, &level, params)?;}
+        else if self.switch_scene == false{
+            main_menu::main_menu::draw_welcome(ctx);
+        }
         present(ctx)?;
         Ok(())
     }
     fn key_up_event(&mut self, ctx: &mut Context, keycode: KeyCode, _keymod: KeyMods) {
         match keycode {
             KeyCode::Space => {
-                self.new_shot(self.ship.x, self.ship.y);
-                println!("{}", self.fire.len());
+                self.game_scene.new_shot(self.game_scene.ship.x, self.game_scene.ship.y);
+                println!("{}", self.game_scene.fire.len());
+            }
+            KeyCode::P => {
+                self.switch_scene = true;
+                println!("P {}",self.switch_scene);
             }
             KeyCode::Escape => event::quit(ctx),
             _ => (), // Do nothing
