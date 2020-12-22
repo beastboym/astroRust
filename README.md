@@ -13,12 +13,12 @@ Plan :
 - ~~Destruction d'un obstacle si le tir fait but~~
 - ~~Ajout d'une barre de vie (3 collisions pour perdre la partie)~~
 - ~~Système de point~~
-- Graphisme (apparence du vaisseau, des obstacles, des tirs, background)
+- ~~Graphisme (apparence du vaisseau, des obstacles, des tirs, background)~~
 
 Bonus si on a le temps et la motivation :
 - Rajouter une histoire
 - Une base de données pour sauvegarder les anciens scores
-- Musique, bruitage
+- ~~Musique, bruitage~~
 - Animation d'explosion pour les collisions
-- Plusieurs niveaux donc augmentation de la difficultés (différentes vitesses et un maximum d'obstacles dans la fenêtre)
+- ~~Plusieurs niveaux donc augmentation de la difficultés (différentes vitesses et un maximum d'obstacles dans la fenêtre)~~
 - Mode entraînement où on peut choisir le niveau

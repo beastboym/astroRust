@@ -1,5 +1,5 @@
 #![allow(warnings)]
-use ggez::graphics::present;
+use ggez::{audio::{self, SoundSource}, graphics::present};
 use ggez::graphics::Color;
 use ggez::graphics::Rect;
 use ggez::input::keyboard::is_key_pressed;
@@ -21,7 +21,7 @@ const SHIP_DIM: f32 = 25.;
 const SPEED: f32 = 8.0;
 const SHOT_DIMX: f32 = 20.;
 const SHOT_DIMY: f32 = 40.;
-const METE_DIM: f32 = 65.;
+const METE_DIM: f32 = 50.;
 
 const SHOTS: f32 = 3.;
 struct FireShot {
@@ -32,6 +32,24 @@ struct Meteor {
     rock: Rect,
     life: bool,
 }
+struct Sound{
+    shot_sound : audio::Source,
+    collision : audio::Source,
+    game_over : audio::Source,
+    bg_loop : audio::Source,
+}
+impl Sound{
+    fn default(ctx: &mut Context)->Self{
+        Sound{
+            shot_sound : audio::Source::new(ctx, "/pew.wav").unwrap(),
+            collision : audio::Source::new(ctx, "/collision.wav").unwrap(),
+            game_over : audio::Source::new(ctx, "/game_over.wav").unwrap(),
+            bg_loop : audio::Source::new(ctx, "/bg_loop.mp3").unwrap(),
+        }
+    }
+}
+
+
 struct MainState {
     ship: Rect,
     fire: Vec<FireShot>,
@@ -40,7 +58,10 @@ struct MainState {
     score: u32,
     level: u32,
     carole: bool,
-    speed : f32,
+    speed: f32,
+    sound: Sound,
+    background : graphics::Image,
+    
 }
 
 impl Meteor {
@@ -53,21 +74,25 @@ impl Meteor {
         }
     }
 }
-fn draw_e(elem: Rect, ctx: &mut Context, path: &str){
+fn draw_e(elem: Rect, ctx: &mut Context, path: &str) {
     let ship_draw = graphics::Mesh::new_rectangle(
         ctx,
         graphics::DrawMode::fill(),
         elem,
         Color::new(1.0, 1.0, 1.0, 1.0),
-        
     )
     .unwrap();
     let texture: graphics::Image = graphics::Image::new(ctx, path).unwrap();
-    graphics::draw(ctx, &texture, graphics::DrawParam::default().dest(elem.point())).unwrap();
+    graphics::draw(
+        ctx,
+        &texture,
+        graphics::DrawParam::default().dest(elem.point()),
+    )
+    .unwrap();
 }
 
 impl MainState {
-    fn new() -> Self {
+    fn new(ctx: &mut Context) -> Self {
         MainState {
             ship: Rect::new(
                 SCREEN_WIDTH / 2. - SHIP_DIM / 2.0,
@@ -81,7 +106,9 @@ impl MainState {
             score: 0,
             level: 1,
             carole: false,
-            speed : SHOTS,
+            speed: SHOTS,
+            sound: Sound::default(ctx),
+            background: graphics::Image::new(ctx,"/bryan-goff1.jpg").unwrap(),
         }
     }
 
@@ -90,7 +117,8 @@ impl MainState {
             Ball: Rect::new(x, y, SHOT_DIMX, SHOT_DIMY),
             life: true,
         };
-        self.fire.push(pew)
+        self.fire.push(pew);
+        let _ = self.sound.shot_sound.play();
     }
 
     fn clear_dead_elem(&mut self) {
@@ -106,13 +134,16 @@ impl MainState {
                     shot.life = false;
                     rock.life = false;
                     self.score += 1;
+                    let _ = self.sound.collision.play();
                 }
             }
         }
     }
-    fn game_over(&self, ctx: &mut Context) {
+    fn game_over(&mut self, ctx: &mut Context) {
         if self.carole == true {
+            let _ = self.sound.game_over.play();
             event::quit(ctx);
+            self.carole = false;
             println!("dead");
         }
     }
@@ -134,22 +165,24 @@ impl MainState {
             self.meteor.push(met);
         }
     }
-   
     fn draw_elem(&mut self, ctx: &mut Context) {
         draw_e(self.ship, ctx, "/ship.png");
         for elem in self.fire.iter_mut() {
-            draw_e(elem.Ball,ctx, "/laser_shot.png");
+            draw_e(elem.Ball, ctx, "/laser_shot1.png");
         }
         for elem in self.meteor.iter_mut() {
-            draw_e(elem.rock,ctx, "/meteorites.png");
+            draw_e(elem.rock, ctx, "/meteor.png");
         }
     }
-    fn level_up(&mut self){
-        if self.score == self.nb_rocks{
+    fn level_up(&mut self) {
+        if self.score == self.nb_rocks {
             self.nb_rocks += 1;
-            self.level +=1;
+            self.level += 1;
             self.speed += 0.5;
             self.score = 0;
+            self.fire.retain(|s| s.life == false);
+            self.meteor.retain(|s| s.life == false);
+            // std::thread::sleep(std::time::Duration::from_millis(500));
         }
     }
 }
@@ -165,31 +198,31 @@ impl FireShot {
 
 impl EventHandler for MainState {
     fn update(&mut self, ctx: &mut Context) -> GameResult {
-        while ggez::timer::check_update_time(ctx, DESIRED_FPS)
-        {
-        self.create_meteor();
-        self.ship_event(ctx);
-        for elem in self.fire.iter_mut() {
-            if elem.Ball.y > 0.0 {
-                elem.Ball.y -= SHOTS;
-
-            } else if elem.Ball.y <= 0.0 {
-                elem.life = false;
+        if self.sound.bg_loop.playing() == false{
+            let _ = self.sound.bg_loop.play();
+        }
+        while ggez::timer::check_update_time(ctx, DESIRED_FPS) {
+            self.create_meteor();
+            self.ship_event(ctx);
+            for elem in self.fire.iter_mut() {
+                if elem.Ball.y > 0.0 {
+                    elem.Ball.y -= SHOTS;
+                } else if elem.Ball.y <= 0.0 {
+                    elem.life = false;
+                }
+            }
+            for rock in self.meteor.iter_mut() {
+                if rock.rock.y < SCREEN_HEIGHT {
+                    rock.rock.y += self.speed;
+                } else if rock.rock.y >= SCREEN_HEIGHT {
+                    rock.life = false;
+                }
+                if rock.rock.overlaps(&self.ship) {
+                    self.carole = true;
+                }
+                println!("FPS: {:?}", ggez::timer::fps(ctx));
             }
         }
-        for rock in self.meteor.iter_mut() {
-            if rock.rock.y < SCREEN_HEIGHT {
-                rock.rock.y += self.speed;
-            }
-            else if rock.rock.y >= SCREEN_HEIGHT {
-                rock.life = false;
-            }
-            if rock.rock.overlaps(&self.ship) {
-                self.carole = true;
-            }
-            println!("FPS: {:?}", ggez::timer::fps(ctx));
-        }
-    }
         self.destroy();
         self.clear_dead_elem();
         self.level_up();
@@ -198,7 +231,12 @@ impl EventHandler for MainState {
     }
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
         clear(ctx, Color::new(0.0, 0.0, 0.0, 1.0));
-        
+        graphics::draw(
+            ctx,
+            &self.background,
+            graphics::DrawParam::default(),
+        )
+        .unwrap();
         self.draw_elem(ctx);
 
         let score = graphics::Text::new(format!("Score : {}", self.score));
@@ -213,12 +251,7 @@ impl EventHandler for MainState {
         present(ctx)?;
         Ok(())
     }
-    fn key_up_event(
-        &mut self,
-        ctx: &mut Context,
-        keycode: KeyCode,
-        _keymod: KeyMods,
-    ) {
+    fn key_up_event(&mut self, ctx: &mut Context, keycode: KeyCode, _keymod: KeyMods) {
         match keycode {
             KeyCode::Space => {
                 self.new_shot(self.ship.x, self.ship.y);
@@ -236,7 +269,6 @@ fn main() -> GameResult {
         .window_setup(WindowSetup::default().title("AstrooooRuuuust"))
         .add_resource_path("./src")
         .build()?;
-        
-    let main_state = &mut MainState::new();
+    let main_state = &mut MainState::new(ctx);
     event::run(ctx, event_loop, main_state)
 }
