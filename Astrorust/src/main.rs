@@ -1,9 +1,12 @@
 #![allow(warnings)]
-use ggez::{audio::{self, SoundSource}, graphics::present};
 use ggez::graphics::Color;
 use ggez::graphics::Rect;
 use ggez::input::keyboard::is_key_pressed;
 use ggez::input::keyboard::KeyCode;
+use ggez::{
+    audio::{self, SoundSource},
+    graphics::present,
+};
 use ggez::{
     conf::WindowSetup,
     event::{self, EventHandler},
@@ -24,27 +27,27 @@ const SHOT_DIMY: f32 = 40.;
 const METE_DIM: f32 = 50.;
 
 const SHOTS: f32 = 3.;
+mod function;
 mod game;
 mod main_menu;
-mod function;
-struct MainState{
-    game_scene : game::GameScene,
-    main_menu : main_menu::main_menu,
-    switch_scene : bool,
+struct MainState {
+    game_scene: game::GameScene,
+    main_menu: main_menu::main_menu,
+    switch_scene: bool,
 }
 
-impl MainState{
-    fn new(ctx : &mut Context)->Self{
-        MainState{
-            game_scene : game::GameScene::new(ctx),
-            main_menu : main_menu::main_menu::new(),
-            switch_scene : false,
+impl MainState {
+    fn new(ctx: &mut Context) -> Self {
+        MainState {
+            game_scene: game::GameScene::new(ctx),
+            main_menu: main_menu::main_menu::new(),
+            switch_scene: false,
         }
     }
 }
 impl EventHandler for MainState {
     fn update(&mut self, ctx: &mut Context) -> GameResult {
-        if self.game_scene.sound.bg_loop.playing() == false{
+        if self.game_scene.sound.bg_loop.playing() == false {
             let _ = self.game_scene.sound.bg_loop.play();
         }
         while ggez::timer::check_update_time(ctx, DESIRED_FPS) {
@@ -72,7 +75,7 @@ impl EventHandler for MainState {
         self.game_scene.destroy();
         self.game_scene.clear_dead_elem();
         self.game_scene.level_up();
-        self.game_scene.game_over(&mut self.switch_scene,ctx);
+        self.game_scene.game_over(&mut self.switch_scene, ctx);
         Ok(())
     }
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
@@ -83,19 +86,9 @@ impl EventHandler for MainState {
             graphics::DrawParam::default(),
         )
         .unwrap();
-        if self.switch_scene == true{
-        self.game_scene.draw_elem(ctx);
-
-        let score = graphics::Text::new(format!("Score : {}", self.game_scene.score));
-        let coord = [0.0 + score.width(ctx) as f32, 20.0];
-        let params = graphics::DrawParam::default().dest(coord);
-        graphics::draw(ctx, &score, params)?;
-
-        let level = graphics::Text::new(format!("Level : {}", self.game_scene.level));
-        let lvl_coord = [0.0 + score.width(ctx) as f32, 40.0];
-        let params = graphics::DrawParam::default().dest(lvl_coord);
-        graphics::draw(ctx, &level, params)?;}
-        else if self.switch_scene == false{
+        if self.switch_scene == true {
+            self.game_scene.draw_elem(ctx);
+        } else {
             main_menu::main_menu::draw_welcome(ctx);
         }
         present(ctx)?;
@@ -104,12 +97,13 @@ impl EventHandler for MainState {
     fn key_up_event(&mut self, ctx: &mut Context, keycode: KeyCode, _keymod: KeyMods) {
         match keycode {
             KeyCode::Space => {
-                self.game_scene.new_shot(self.game_scene.ship.x, self.game_scene.ship.y);
-                println!("{}", self.game_scene.fire.len());
+                self.game_scene
+                    .new_shot(self.game_scene.ship.x, self.game_scene.ship.y);
+                     println!("{}", self.game_scene.fire.len());
             }
             KeyCode::P => {
                 self.switch_scene = true;
-                println!("P {}",self.switch_scene);
+                println!("P {}", self.switch_scene);
             }
             KeyCode::Escape => event::quit(ctx),
             _ => (), // Do nothing
