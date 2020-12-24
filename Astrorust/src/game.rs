@@ -61,7 +61,8 @@ pub(crate) struct GameScene {
     pub nb_rocks: u32,
     pub score: u32,
     pub level: u32,
-    pub carole: bool,
+    pub alive: bool,
+    pub carole: u32,
     pub speed: f32,
     pub sound: Sound,
     pub background: graphics::Image,
@@ -72,14 +73,14 @@ impl Meteor {
         let mut rng = rand::thread_rng();
         let rando: f32 = rng.gen_range(0.0 + METE_DIM, SCREEN_WIDTH - METE_DIM);
         Meteor {
-            rock: Rect::new(rando, - SHIP_DIM, METE_DIM, METE_DIM),
+            rock: Rect::new(rando, -SHIP_DIM, METE_DIM, METE_DIM),
             life: true,
         }
     }
 }
 
 impl GameScene {
-    pub fn new(ctx: &mut Context) -> Self {
+    pub fn default(ctx: &mut Context) -> Self {
         GameScene {
             ship: Rect::new(
                 SCREEN_WIDTH / 2. - SHIP_DIM / 2.0,
@@ -92,7 +93,8 @@ impl GameScene {
             nb_rocks: 3,
             score: 0,
             level: 1,
-            carole: false,
+            alive: true,
+            carole: 0,
             speed: SHOTS,
             sound: Sound::default(ctx),
             background: graphics::Image::new(ctx, "/bryan-goff1.jpg").unwrap(),
@@ -101,7 +103,7 @@ impl GameScene {
 
     pub fn new_shot(&mut self, x: f32, y: f32) {
         let pew = FireShot {
-            Ball: Rect::new(x + SHIP_DIM /2.0, y, SHOT_DIMX, SHOT_DIMY),
+            Ball: Rect::new(x + SHIP_DIM / 2.0, y, SHOT_DIMX, SHOT_DIMY),
             life: true,
         };
         self.fire.push(pew);
@@ -121,19 +123,22 @@ impl GameScene {
                     shot.life = false;
                     rock.life = false;
                     self.score += 1;
+                    self.carole += 1;
                     let _ = self.sound.collision.play();
                 }
             }
         }
     }
-    pub fn game_over(&mut self, switch: &mut bool, ctx: &mut Context) {
-        if self.carole == true {
+    pub fn game_over(&mut self) {
+        if self.alive == false {
             let _ = self.sound.game_over.play();
             // event::quit(ctx);
-            self.carole = false;
-            *switch = false;
-
-            // println!("dead");
+            self.alive = true;
+            self.remove_all();
+            self.nb_rocks = 3;
+            self.level = 1;
+            self.score = 0;
+            self.speed = SHOTS;     
         }
     }
     pub fn ship_event(&mut self, ctx: &Context) {
@@ -169,15 +174,17 @@ impl GameScene {
         function::draw_text(ctx, score, coord[0], coord[1]);
         function::draw_text(ctx, level, lvl_coord[0], lvl_coord[1]);
     }
+
     pub fn level_up(&mut self) {
-        if self.score == self.nb_rocks {
+        if self.carole == self.nb_rocks{
             self.nb_rocks += 1;
             self.level += 1;
             self.speed += 0.5;
-            self.score = 0;
-            self.fire.retain(|s| s.life == false);
-            self.meteor.retain(|s| s.life == false);
-            // std::thread::sleep(std::time::Duration::from_millis(500));
+            self.carole = 0;        
         }
+    }
+    pub fn remove_all(&mut self){
+         function::erase_vec(&mut self.fire);
+         function::erase_vec(&mut self.meteor);
     }
 }

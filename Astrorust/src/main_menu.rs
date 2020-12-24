@@ -20,7 +20,7 @@ pub(crate) struct main_menu {
 }
 
 impl main_menu {
-    pub fn new() -> Self {
+    pub fn default() -> Self {
         main_menu {
             welcome: "Bienvenu sur Astro Rust".to_string(),
             play: "pressez sur la touche P : PLAY".to_string(),
@@ -29,11 +29,11 @@ impl main_menu {
     }
 
     pub fn draw_welcome(ctx: &mut Context) {
-        let welcome_label = graphics::Text::new(main_menu::new().welcome);
+        let welcome_label = graphics::Text::new(main_menu::default().welcome);
         let size_x = 300.0 - welcome_label.dimensions(ctx).0 as f32 / 2.0;
         let size_y = 300.0 - welcome_label.dimensions(ctx).1 as f32 / 2.0;
-        let play_label = graphics::Text::new(main_menu::new().play);
-        let quit_label = graphics::Text::new(main_menu::new().quit);
+        let play_label = graphics::Text::new(main_menu::default().play);
+        let quit_label = graphics::Text::new(main_menu::default().quit);
         function::draw_text(ctx, welcome_label, size_x, size_x);
         function::draw_text(ctx, play_label, size_x, size_x + 50.0);
         function::draw_text(ctx, quit_label, size_x, size_x + 100.0);

@@ -29,19 +29,22 @@ const METE_DIM: f32 = 50.;
 const SHOTS: f32 = 3.;
 mod function;
 mod game;
+mod game_over;
 mod main_menu;
 struct MainState {
     game_scene: game::GameScene,
     main_menu: main_menu::main_menu,
-    switch_scene: bool,
+    game_over: game_over::GameOver,
+    switch_scene: u32,
 }
 
 impl MainState {
     fn new(ctx: &mut Context) -> Self {
         MainState {
-            game_scene: game::GameScene::new(ctx),
-            main_menu: main_menu::main_menu::new(),
-            switch_scene: false,
+            game_scene: game::GameScene::default(ctx),
+            main_menu: main_menu::main_menu::default(),
+            game_over: game_over::GameOver::default(),
+            switch_scene: 0,
         }
     }
 }
@@ -51,7 +54,9 @@ impl EventHandler for MainState {
             let _ = self.game_scene.sound.bg_loop.play();
         }
         while ggez::timer::check_update_time(ctx, DESIRED_FPS) {
-            self.game_scene.create_meteor();
+            if self.switch_scene == 1 {
+                self.game_scene.create_meteor();
+            }
             self.game_scene.ship_event(ctx);
             for elem in self.game_scene.fire.iter_mut() {
                 if elem.Ball.y > 0.0 {
@@ -67,15 +72,18 @@ impl EventHandler for MainState {
                     rock.life = false;
                 }
                 if rock.rock.overlaps(&self.game_scene.ship) {
-                    self.game_scene.carole = true;
+                    self.game_scene.alive = false;
+                    self.switch_scene = 2;
                 }
                 // println!("FPS: {:?}", ggez::timer::fps(ctx));
+
             }
+            self.game_scene.destroy();
+            self.game_scene.clear_dead_elem();
+            self.game_scene.level_up();
+            self.game_scene.game_over();
         }
-        self.game_scene.destroy();
-        self.game_scene.clear_dead_elem();
-        self.game_scene.level_up();
-        self.game_scene.game_over(&mut self.switch_scene, ctx);
+
         Ok(())
     }
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
@@ -86,11 +94,18 @@ impl EventHandler for MainState {
             graphics::DrawParam::default(),
         )
         .unwrap();
-        if self.switch_scene == true {
-            self.game_scene.draw_elem(ctx);
-        } else {
-            main_menu::main_menu::draw_welcome(ctx);
+
+        match self.switch_scene {
+            0 => main_menu::main_menu::draw_welcome(ctx),
+            1 => self.game_scene.draw_elem(ctx),
+            2 => game_over::GameOver::draw_game_over(
+                ctx,
+                self.game_scene.level,
+                self.game_scene.score,
+            ),
+            _ => (),
         }
+
         present(ctx)?;
         Ok(())
     }
@@ -99,10 +114,12 @@ impl EventHandler for MainState {
             KeyCode::Space => {
                 self.game_scene
                     .new_shot(self.game_scene.ship.x, self.game_scene.ship.y);
-                     println!("{}", self.game_scene.fire.len());
+                println!("{}", self.game_scene.fire.len());
             }
             KeyCode::P => {
-                self.switch_scene = true;
+                println!("schene {}", self.switch_scene);
+
+                self.switch_scene = 1;
                 println!("P {}", self.switch_scene);
             }
             KeyCode::Escape => event::quit(ctx),

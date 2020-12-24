@@ -37,3 +37,10 @@ pub(crate) fn draw_e(elem: Rect, ctx: &mut Context, path: &str) {
     )
     .unwrap();
 }
+
+/// Efface tout le contenue d'un vecteur
+pub(crate) fn erase_vec<T>(vec: &mut Vec<T>) {
+    for i in 0..vec.len() {
+        vec.pop();
+    }
+}
