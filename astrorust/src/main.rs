@@ -96,13 +96,10 @@ impl EventHandler for MainState {
             KeyCode::Space => {
                 self.game_scene
                     .new_shot(self.game_scene.ship.x, self.game_scene.ship.y);
-                println!("{}", self.game_scene.fire.len());
             }
             KeyCode::P => {
-                println!("schene {}", self.switch_scene);
 
                 self.switch_scene = 1;
-                println!("P {}", self.switch_scene);
             }
             KeyCode::Escape => event::quit(ctx),
             _ => (),

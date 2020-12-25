@@ -107,7 +107,6 @@ impl GameScene {
         for shot in self.fire.iter_mut() {
             for rock in self.meteor.iter_mut() {
                 if shot.ball.overlaps(&rock.rock) {
-                    println!("collision");
                     shot.life = false;
                     rock.life = false;
                     self.score += 1;
