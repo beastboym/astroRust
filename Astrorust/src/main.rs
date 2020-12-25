@@ -16,21 +16,30 @@ use ggez::{graphics::clear, mint::Point2, nalgebra::Point};
 use ggez::{Context, ContextBuilder, GameResult};
 use rand::Rng;
 type Vector = ggez::mint::Vector2<f32>;
+/// Defini les FPS max a pour le jeu
 const DESIRED_FPS: u32 = 60;
+/// Defini la largeur de l'ecran
 const SCREEN_WIDTH: f32 = 600.;
+/// Defini la longueur de l'ecran
 const SCREEN_HEIGHT: f32 = 600.;
-
+/// dimensions du container du vaisseau, ne modifie pas directement le vaisseau mais plutot le rect dans lequel il est
 const SHIP_DIM: f32 = 25.;
+/// vitesse de deplacement du vaisseau
 const SPEED: f32 = 8.0;
+/// largeur du container du tir, ne modifie pas directement le tir mais plutot le rect dans lequel il est
 const SHOT_DIMX: f32 = 20.;
+/// longueur du container du tir, ne modifie pas directement le tir mais plutot le rect dans lequel il est
 const SHOT_DIMY: f32 = 40.;
+/// dimensions du container des meteorites, ne modifie pas directement le meteorites mais plutot le rect dans lequel il est
 const METE_DIM: f32 = 50.;
-
+/// vitesse des tirs
 const SHOTS: f32 = 3.;
 mod function;
 mod game;
 mod game_over;
 mod main_menu;
+mod assets;
+/// structure principal du jeux,importe tout les elements necessaires au jeu
 struct MainState {
     game_scene: game::GameScene,
     main_menu: main_menu::main_menu,
@@ -78,7 +87,7 @@ impl EventHandler for MainState {
                 // println!("FPS: {:?}", ggez::timer::fps(ctx));
 
             }
-            self.game_scene.destroy();
+            self.game_scene.collision();
             self.game_scene.clear_dead_elem();
             self.game_scene.level_up();
             self.game_scene.game_over();
@@ -88,27 +97,19 @@ impl EventHandler for MainState {
     }
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
         clear(ctx, Color::new(0.0, 0.0, 0.0, 1.0));
-        graphics::draw(
-            ctx,
-            &self.game_scene.background,
-            graphics::DrawParam::default(),
-        )
-        .unwrap();
+        function::draw_image(&self.game_scene.images.background, ctx);
 
         match self.switch_scene {
-            0 => main_menu::main_menu::draw_welcome(ctx),
+            0 => self.main_menu.draw_welcome(ctx),
             1 => self.game_scene.draw_elem(ctx),
-            2 => game_over::GameOver::draw_game_over(
-                ctx,
-                self.game_scene.level,
-                self.game_scene.score,
-            ),
+            2 => self.game_over.draw_game_over(ctx),
             _ => (),
         }
 
         present(ctx)?;
         Ok(())
     }
+
     fn key_up_event(&mut self, ctx: &mut Context, keycode: KeyCode, _keymod: KeyMods) {
         match keycode {
             KeyCode::Space => {
@@ -127,7 +128,7 @@ impl EventHandler for MainState {
         }
     }
 }
-
+/// s'occupe de creer un context et de lancer le jeu
 fn main() -> GameResult {
     let (ctx, event_loop) = &mut ContextBuilder::new("AstroRust", "Daouda, Claire")
         .window_mode(ggez::conf::WindowMode::default().dimensions(SCREEN_WIDTH, SCREEN_HEIGHT))

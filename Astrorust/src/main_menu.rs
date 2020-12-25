@@ -13,13 +13,15 @@ use ggez::{
     event::{self, EventHandler},
 };
 use ggez::{event::KeyMods, graphics};
+    /// structure principal de la main menu
 pub(crate) struct main_menu {
-    welcome: String,
-    play: String,
-    quit: String,
+   pub welcome: String,
+   pub  play: String,
+   pub quit: String,
 }
 
 impl main_menu {
+    /// defini une structure par default a main_menu
     pub fn default() -> Self {
         main_menu {
             welcome: "Bienvenu sur Astro Rust".to_string(),
@@ -27,8 +29,8 @@ impl main_menu {
             quit: "pressez sur la touche echap : QUIT".to_string(),
         }
     }
-
-    pub fn draw_welcome(ctx: &mut Context) {
+/// dessine les elements texts de la scene.
+    pub(crate) fn draw_welcome(&mut self,ctx: &mut Context) {
         let welcome_label = graphics::Text::new(main_menu::default().welcome);
         let size_x = 300.0 - welcome_label.dimensions(ctx).0 as f32 / 2.0;
         let size_y = 300.0 - welcome_label.dimensions(ctx).1 as f32 / 2.0;

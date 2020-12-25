@@ -13,6 +13,7 @@ use ggez::{
     event::{self, EventHandler},
 };
 use ggez::{event::KeyMods, graphics};
+/// Structure de notre scene game over
 pub(crate) struct GameOver {
     game_over: String,
     play: String,
@@ -20,6 +21,7 @@ pub(crate) struct GameOver {
 }
 
 impl GameOver {
+    /// valeur par defaut de notre structure GameOver
     pub fn default() -> Self {
         GameOver {
             game_over: format!("Dommage vous avez perdu aux niveaux"),
@@ -27,15 +29,10 @@ impl GameOver {
             quit: "pressez sur la touche echap : QUIT".to_string(),
         }
     }
-
-    pub fn draw_game_over(ctx: &mut Context, level: u32, score: u32) {
-        let txt = format!(
-            "{} {} avec {} points",
-            GameOver::default().game_over,
-            level,
-            score
-        );
-        let game_over_label = graphics::Text::new(txt);
+/// dessine les element de notre scene game over
+    pub fn draw_game_over(&mut self, ctx: &mut Context) {
+     
+        let game_over_label = graphics::Text::new(GameOver::default().game_over);
         let size_x = 300.0 - game_over_label.dimensions(ctx).0 as f32 / 2.0;
         let size_y = 300.0 - game_over_label.dimensions(ctx).1 as f32 / 2.0;
         let play_label = graphics::Text::new(GameOver::default().play);

@@ -44,3 +44,8 @@ pub(crate) fn erase_vec<T>(vec: &mut Vec<T>) {
         vec.pop();
     }
 }
+/// dessine une image
+pub(crate) fn draw_image(path : &str,ctx:&mut Context){
+    let image : graphics::Image = graphics::Image::new(ctx,path).unwrap();
+    graphics::draw(ctx, &image, graphics::DrawParam::default());
+}
