@@ -1,8 +1,8 @@
 use crate::function;
+use ggez::graphics;
 use ggez::Context;
 
-use ggez::graphics;
-/// Structure de notre scene game over
+/// Structure principal de notre scene game over
 pub(crate) struct GameOver {
     game_over: String,
     play: String,

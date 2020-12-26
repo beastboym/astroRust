@@ -1,16 +1,15 @@
 use ggez::audio::SoundSource;
-use ggez::graphics;
-use ggez::graphics::Rect;
-use ggez::input::keyboard::is_key_pressed;
-use ggez::input::keyboard::KeyCode;
+use ggez::graphics::{Rect, Text};
+use ggez::input::keyboard::{is_key_pressed, KeyCode};
 use ggez::Context;
 use rand::Rng;
 
 use crate::assets::*;
 use crate::function;
-
-pub const SCREEN_WIDTH: f32 = 600.0;
-pub const SCREEN_HEIGHT: f32 = 600.0;
+/// Define the width of the game window
+pub const SCREEN_WIDTH: f32 = 600.;
+/// Define the height of the game window
+pub const SCREEN_HEIGHT: f32 = 600.;
 
 /// dimensions du container du vaisseau, ne modifie pas directement le vaisseau mais plutot le rect dans lequel il est
 pub const SHIP_DIM: f32 = 25.0;
@@ -162,8 +161,8 @@ impl GameScene {
         for elem in self.meteor.iter_mut() {
             function::draw_e(elem.rock, ctx, &self.images.meteor);
         }
-        let score = graphics::Text::new(format!("Score : {}", self.score));
-        let level = graphics::Text::new(format!("Level : {}", self.level));
+        let score = Text::new(format!("Score : {}", self.score));
+        let level = Text::new(format!("Level : {}", self.level));
         let coord = [0.0 + score.width(ctx) as f32, 20.0];
         let lvl_coord = [0.0 + score.width(ctx) as f32, 40.0];
         function::draw_text(ctx, score, coord[0], coord[1]);

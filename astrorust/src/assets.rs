@@ -1,13 +1,15 @@
 use ggez::audio;
 use ggez::Context;
+/// Utilisé pour contenir tout les sons du jeu
 pub(crate) struct Sound {
     pub shot_sound: audio::Source,
     pub collision: audio::Source,
     pub game_over: audio::Source,
     pub bg_loop: audio::Source,
 }
-
+    
 impl Sound {
+    /// Donne comme valeurs par defaut de notre structure les sons utilisé dans le jeu
     pub(crate) fn default(ctx: &mut Context) -> Self {
         Sound {
             shot_sound: audio::Source::new(ctx, "/ressources/pew.wav").unwrap(),
@@ -17,6 +19,7 @@ impl Sound {
         }
     }
 }
+/// Utilisé pour contenir tout les images du jeu
 
 pub(crate) struct Images {
     pub background: String,
@@ -26,6 +29,7 @@ pub(crate) struct Images {
 }
 
 impl Images {
+    /// Donne comme valeurs par defaut de notre structure les images utilisé dans le jeu
     pub fn default() -> Self {
         Images {
             background: "/ressources/bryan-goff1.jpg".to_string(),

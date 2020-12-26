@@ -1,20 +1,14 @@
-use ggez::event::KeyMods;
-use ggez::graphics::clear;
-use ggez::graphics::Color;
+use ggez::audio::SoundSource;
+use ggez::graphics::{clear, present, Color};
 use ggez::input::keyboard::KeyCode;
-use ggez::{audio::SoundSource, graphics::present};
 use ggez::{
     conf::WindowSetup,
-    event::{self, EventHandler},
+    event::{self, EventHandler, KeyMods},
 };
 use ggez::{Context, ContextBuilder, GameResult};
 
 /// Define the maximum FPS for the game
 const DESIRED_FPS: u32 = 60;
-/// Define the width of the game window
-const SCREEN_WIDTH: f32 = 600.;
-/// Define the height of the game window
-const SCREEN_HEIGHT: f32 = 600.;
 
 mod assets;
 mod function;
@@ -57,9 +51,9 @@ impl EventHandler for MainState {
                 }
             }
             for rock in self.game_scene.meteor.iter_mut() {
-                if rock.rock.y < SCREEN_HEIGHT {
+                if rock.rock.y < game::SCREEN_HEIGHT {
                     rock.rock.y += self.game_scene.speed;
-                } else if rock.rock.y >= SCREEN_HEIGHT {
+                } else if rock.rock.y >= game::SCREEN_HEIGHT {
                     rock.life = false;
                 }
                 if rock.rock.overlaps(&self.game_scene.ship) {
@@ -98,7 +92,6 @@ impl EventHandler for MainState {
                     .new_shot(self.game_scene.ship.x, self.game_scene.ship.y);
             }
             KeyCode::P => {
-
                 self.switch_scene = 1;
             }
             KeyCode::Escape => event::quit(ctx),
@@ -109,7 +102,9 @@ impl EventHandler for MainState {
 /// Manage the creation of the game's context and launch the game
 fn main() -> GameResult {
     let (ctx, event_loop) = &mut ContextBuilder::new("AstroRust", "Daouda, Claire")
-        .window_mode(ggez::conf::WindowMode::default().dimensions(SCREEN_WIDTH, SCREEN_HEIGHT))
+        .window_mode(
+            ggez::conf::WindowMode::default().dimensions(game::SCREEN_WIDTH, game::SCREEN_HEIGHT),
+        )
         .window_setup(WindowSetup::default().title("AstrooooRuuuust"))
         .add_resource_path("./src")
         .build()?;
