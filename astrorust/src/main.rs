@@ -9,11 +9,11 @@ use ggez::{
 };
 use ggez::{Context, ContextBuilder, GameResult};
 
-/// Defini les FPS max a pour le jeu
+/// Define the maximum FPS for the game
 const DESIRED_FPS: u32 = 60;
-/// Defini la largeur de l'ecran
+/// Define the width of the game window
 const SCREEN_WIDTH: f32 = 600.;
-/// Defini la longueur de l'ecran
+/// Define the height of the game window
 const SCREEN_HEIGHT: f32 = 600.;
 
 mod assets;
@@ -21,7 +21,7 @@ mod function;
 mod game;
 mod game_over;
 mod main_menu;
-/// structure principal du jeux,importe tout les elements necessaires au jeu
+/// The game's principal structure, import every elements necessary for the game
 struct MainState {
     game_scene: game::GameScene,
     main_menu: main_menu::MainMenu,
@@ -106,7 +106,7 @@ impl EventHandler for MainState {
         }
     }
 }
-/// s'occupe de creer un context et de lancer le jeu
+/// Manage the creation of the game's context and launch the game
 fn main() -> GameResult {
     let (ctx, event_loop) = &mut ContextBuilder::new("AstroRust", "Daouda, Claire")
         .window_mode(ggez::conf::WindowMode::default().dimensions(SCREEN_WIDTH, SCREEN_HEIGHT))
