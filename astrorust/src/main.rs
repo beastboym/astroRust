@@ -15,7 +15,7 @@ mod function;
 mod game;
 mod game_over;
 mod main_menu;
-/// The game's principal structure, import every elements necessary for the game
+/// The game's main structure, import every elements necessary for the game
 struct MainState {
     game_scene: game::GameScene,
     main_menu: main_menu::MainMenu,
