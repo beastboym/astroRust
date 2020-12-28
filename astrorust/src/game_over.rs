@@ -2,7 +2,7 @@ use crate::function;
 use ggez::graphics;
 use ggez::Context;
 
-/// Principal structure for the Game Over scene
+/// Main structure for the Game Over scene
 pub(crate) struct GameOver {
     game_over: String,
     play: String,
