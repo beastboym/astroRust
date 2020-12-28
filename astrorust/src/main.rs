@@ -1,27 +1,21 @@
-use ggez::event::KeyMods;
-use ggez::graphics::clear;
-use ggez::graphics::Color;
+use ggez::audio::SoundSource;
+use ggez::graphics::{clear, present, Color};
 use ggez::input::keyboard::KeyCode;
-use ggez::{audio::SoundSource, graphics::present};
 use ggez::{
     conf::WindowSetup,
-    event::{self, EventHandler},
+    event::{self, EventHandler, KeyMods},
 };
 use ggez::{Context, ContextBuilder, GameResult};
 
-/// Defini les FPS max a pour le jeu
+/// Define the maximum FPS for the game
 const DESIRED_FPS: u32 = 60;
-/// Defini la largeur de l'ecran
-const SCREEN_WIDTH: f32 = 600.;
-/// Defini la longueur de l'ecran
-const SCREEN_HEIGHT: f32 = 600.;
 
 mod assets;
 mod function;
 mod game;
 mod game_over;
 mod main_menu;
-/// structure principal du jeux,importe tout les elements necessaires au jeu
+/// The game's main structure, import every elements necessary for the game
 struct MainState {
     game_scene: game::GameScene,
     main_menu: main_menu::MainMenu,
@@ -30,6 +24,7 @@ struct MainState {
 }
 
 impl MainState {
+    /// Create a new instance for the game
     fn new(ctx: &mut Context) -> Self {
         MainState {
             game_scene: game::GameScene::default(ctx),
@@ -39,6 +34,7 @@ impl MainState {
         }
     }
 }
+
 impl EventHandler for MainState {
     fn update(&mut self, ctx: &mut Context) -> GameResult {
         if self.game_scene.sound.bg_loop.playing() == false {
@@ -57,9 +53,9 @@ impl EventHandler for MainState {
                 }
             }
             for rock in self.game_scene.meteor.iter_mut() {
-                if rock.rock.y < SCREEN_HEIGHT {
+                if rock.rock.y < game::SCREEN_HEIGHT {
                     rock.rock.y += self.game_scene.speed;
-                } else if rock.rock.y >= SCREEN_HEIGHT {
+                } else if rock.rock.y >= game::SCREEN_HEIGHT {
                     rock.life = false;
                 }
                 if rock.rock.overlaps(&self.game_scene.ship) {
@@ -73,7 +69,6 @@ impl EventHandler for MainState {
             self.game_scene.level_up();
             self.game_scene.game_over();
         }
-
         Ok(())
     }
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
@@ -98,7 +93,6 @@ impl EventHandler for MainState {
                     .new_shot(self.game_scene.ship.x, self.game_scene.ship.y);
             }
             KeyCode::P => {
-
                 self.switch_scene = 1;
             }
             KeyCode::Escape => event::quit(ctx),
@@ -106,10 +100,12 @@ impl EventHandler for MainState {
         }
     }
 }
-/// s'occupe de creer un context et de lancer le jeu
+/// Manage the creation of the game's context and launch the game
 fn main() -> GameResult {
     let (ctx, event_loop) = &mut ContextBuilder::new("AstroRust", "Daouda, Claire")
-        .window_mode(ggez::conf::WindowMode::default().dimensions(SCREEN_WIDTH, SCREEN_HEIGHT))
+        .window_mode(
+            ggez::conf::WindowMode::default().dimensions(game::SCREEN_WIDTH, game::SCREEN_HEIGHT),
+        )
         .window_setup(WindowSetup::default().title("AstrooooRuuuust"))
         .add_resource_path("./src")
         .build()?;

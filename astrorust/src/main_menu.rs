@@ -3,7 +3,8 @@ use crate::function;
 use ggez::Context;
 
 use ggez::graphics;
-/// structure principal de la main menu
+
+/// Princial structure for the Main Menu scene
 pub(crate) struct MainMenu {
     pub welcome: String,
     pub play: String,
@@ -11,7 +12,7 @@ pub(crate) struct MainMenu {
 }
 
 impl MainMenu {
-    /// defini une structure par default a main_menu
+    /// Define default values for the structure MainMenu
     pub fn default() -> Self {
         MainMenu {
             welcome: "Bienvenu sur Astro Rust".to_string(),
@@ -19,7 +20,7 @@ impl MainMenu {
             quit: "pressez sur la touche echap : QUIT".to_string(),
         }
     }
-    /// dessine les elements texts de la scene.
+    /// Draw every `Text` type elements of the scene
     pub(crate) fn draw_welcome(&mut self, ctx: &mut Context) {
         let welcome_label = graphics::Text::new(MainMenu::default().welcome);
         let size_x = 300.0 - welcome_label.dimensions(ctx).0 as f32 / 2.0;
