@@ -24,6 +24,7 @@ struct MainState {
 }
 
 impl MainState {
+    /// Create a new instance for the game
     fn new(ctx: &mut Context) -> Self {
         MainState {
             game_scene: game::GameScene::default(ctx),
@@ -33,6 +34,7 @@ impl MainState {
         }
     }
 }
+
 impl EventHandler for MainState {
     fn update(&mut self, ctx: &mut Context) -> GameResult {
         if self.game_scene.sound.bg_loop.playing() == false {
@@ -67,7 +69,6 @@ impl EventHandler for MainState {
             self.game_scene.level_up();
             self.game_scene.game_over();
         }
-
         Ok(())
     }
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
