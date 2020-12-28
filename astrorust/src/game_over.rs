@@ -2,7 +2,7 @@ use crate::function;
 use ggez::graphics;
 use ggez::Context;
 
-/// Structure principal de notre scene game over
+/// Principal structure for the Game Over scene
 pub(crate) struct GameOver {
     game_over: String,
     play: String,
@@ -10,7 +10,7 @@ pub(crate) struct GameOver {
 }
 
 impl GameOver {
-    /// valeur par defaut de notre structure GameOver
+    /// Default value of the structure GameOver
     pub fn default() -> Self {
         GameOver {
             game_over: format!("Dommage vous avez perdu!"),
@@ -18,7 +18,7 @@ impl GameOver {
             quit: "pressez sur la touche echap : QUIT".to_string(),
         }
     }
-    /// dessine les element de notre scene game over
+    /// Draw the elements of the Game Over scene
     pub fn draw_game_over(&mut self, ctx: &mut Context) {
         let game_over_label = graphics::Text::new(GameOver::default().game_over);
         let size_x = 300.0 - game_over_label.dimensions(ctx).0 as f32 / 2.0;
