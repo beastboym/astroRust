@@ -11,32 +11,31 @@ pub const SCREEN_WIDTH: f32 = 600.;
 /// Define the height of the game window
 pub const SCREEN_HEIGHT: f32 = 600.;
 
-/// dimensions du container du vaisseau, ne modifie pas directement le vaisseau mais plutot le rect dans lequel il est
+/// Dimensions of the ship's container, do not directly change the ship as it is represented (the image) but rather the rect on which it is drawn
 pub const SHIP_DIM: f32 = 25.0;
-/// vitesse de deplacement du vaisseau
+/// Ship's movement speed
 pub const SPEED: f32 = 8.0;
-/// largeur du container du tir, ne modifie pas directement le tir mais plutot le rect dans lequel il est
+/// Width of the shots container, do not directly change the shots as they are represented (the image) but rather the rect on which they are drawn
 pub const SHOT_DIMX: f32 = 20.0;
-/// longueur du container du tir, ne modifie pas directement le tir mais plutot le rect dans lequel il est
+/// Height of the shots container, do not directly change the shots as they are represented (the image) but rather the rect on which they are drawn
 pub const SHOT_DIMY: f32 = 40.0;
-/// dimensions du container des meteorites, ne modifie pas directement le meteorites mais plutot le rect dans lequel il est
+/// Dimensions of the meteorites' container, do not directly change the meteorites as they are represented (the image) but rather the rect on which they are drawn
 pub const METE_DIM: f32 = 50.0;
-/// vitesse des tirs
+/// Shots' movement speed
 pub const SHOTS: f32 = 3.0;
 
-/// Concretement, exactement la meme structure que Meteor, cet separation a été faites pour une question de lisibilié
-/// La seule diffrence notable est que FireShot n'implemente pas default
+/// FireShot and Meteor are visibly the same structures but a separation has been done to facilitate the implementation of differents elements (the shots and meteorites)
 pub struct FireShot {
     pub ball: Rect,
     pub life: bool,
 }
-/// Concretement, exactement la meme structure que FireShot, cet separation a été faites pour une question de lisibilié
+
 pub struct Meteor {
     pub rock: Rect,
     pub life: bool,
 }
 
-/// Scene principal du jeu, contient toutes les entité utiles au fonctionnement du jeu
+/// Principal scene of the game, contain every entity that can be used to make the game run
 pub(crate) struct GameScene {
     pub ship: Rect,
     pub fire: Vec<FireShot>,
@@ -52,7 +51,7 @@ pub(crate) struct GameScene {
 }
 
 impl Meteor {
-    /// defini une valeur par defaut a notre structure Meteor
+    /// Define a default value for the structure Meteor
     pub fn default() -> Self {
         let mut rng = rand::thread_rng();
         let rando: f32 = rng.gen_range(0.0 + METE_DIM, SCREEN_WIDTH - METE_DIM);
@@ -64,7 +63,7 @@ impl Meteor {
 }
 
 impl GameScene {
-    /// defini une valeur par defaut a notre structure GameScene
+    /// Define a default value for the structure GameScene
     pub fn default(ctx: &mut Context) -> Self {
         GameScene {
             ship: Rect::new(
@@ -86,7 +85,7 @@ impl GameScene {
         }
     }
 
-    /// creer un nouveaux tirs
+    /// Create a new shot
     pub fn new_shot(&mut self, x: f32, y: f32) {
         let pew = FireShot {
             ball: Rect::new(x + SHIP_DIM / 2.0, y, SHOT_DIMX, SHOT_DIMY),
@@ -96,12 +95,13 @@ impl GameScene {
         let _ = self.sound.shot_sound.play();
     }
 
-    /// efface les entite qui sortes du cadres
+    /// Erase every entity that goes out of the border of the window
     pub fn clear_dead_elem(&mut self) {
         self.fire.retain(|s| s.life == true);
         self.meteor.retain(|s| s.life == true);
     }
-    /// traite les collision des rocher avec les tirs
+
+    /// Manage the collisions between meteorites and shots
     pub fn collision(&mut self) {
         for shot in self.fire.iter_mut() {
             for rock in self.meteor.iter_mut() {
@@ -115,7 +115,8 @@ impl GameScene {
             }
         }
     }
-    // defini les conditions de defaites
+
+    /// Define the defeat conditions
     pub fn game_over(&mut self) {
         if self.alive == false {
             let _ = self.sound.game_over.play();
@@ -130,7 +131,7 @@ impl GameScene {
         }
     }
 
-    /// defini les touches qui feront bougé le vaisseaux
+    /// Define the keys to make the ship move
     pub fn ship_event(&mut self, ctx: &Context) {
         if is_key_pressed(ctx, KeyCode::Right) {
             if self.ship.right() < SCREEN_WIDTH {
@@ -144,7 +145,7 @@ impl GameScene {
         }
     }
 
-    /// defini les conditions de creations de meteorites
+    /// Define the conditions to create a new meteorite
     pub fn create_meteor(&mut self) {
         if self.meteor.len() < self.nb_rocks as usize {
             let met = Meteor::default();
@@ -152,7 +153,7 @@ impl GameScene {
         }
     }
 
-    /// dessine les elements de la scene
+    /// Draw the scene's elements
     pub fn draw_elem(&mut self, ctx: &mut Context) {
         function::draw_e(self.ship, ctx, &self.images.ship);
         for elem in self.fire.iter_mut() {
@@ -169,7 +170,7 @@ impl GameScene {
         function::draw_text(ctx, level, lvl_coord[0], lvl_coord[1]);
     }
 
-    /// defini les conditions de passage de niveaux
+    /// Define the condition to level up and the new difficulties for this new level
     pub fn level_up(&mut self) {
         if self.carole == self.nb_rocks {
             self.nb_rocks += 1;
@@ -180,7 +181,7 @@ impl GameScene {
         }
     }
 
-    /// Efface toutes les entite du jeu
+    /// Erase all of the game's entities
     pub fn remove_all(&mut self) {
         function::erase_vec(&mut self.fire);
         function::erase_vec(&mut self.meteor);
