@@ -35,7 +35,7 @@ pub struct Meteor {
     pub life: bool,
 }
 
-/// Principal scene of the game, contain every entity that can be used to make the game run
+/// Main scene of the game, contain every entity that can be used to make the game run
 pub(crate) struct GameScene {
     pub ship: Rect,
     pub fire: Vec<FireShot>,
