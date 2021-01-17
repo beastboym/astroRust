@@ -19,13 +19,6 @@ pub(crate) fn draw_e(elem: Rect, ctx: &mut Context, path: &str) {
     draw(ctx, &texture, DrawParam::default().dest(elem.point())).unwrap();
 }
 
-/// Erase a vector's content
-pub(crate) fn erase_vec<T>(vec: &mut Vec<T>) {
-    for _i in 0..vec.len() {
-        vec.pop();
-    }
-}
-
 /// Draw an image
 pub(crate) fn draw_image(path: &str, ctx: &mut Context) {
     let image: Image = Image::new(ctx, path).unwrap();
