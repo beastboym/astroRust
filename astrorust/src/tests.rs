@@ -6,13 +6,6 @@ mod tests {
     use crate::game::*;
 
     #[test]
-    // test function.rs
-    fn test_erase_vec() {
-        let mut vec = vec![0,1,2,3];
-        erase_vec(&mut vec);
-        assert_eq!(0,vec.len());
-    }
-    #[test]
     //test main_menu.rs
     fn test_main_menu(){
         let main = main_menu::default();

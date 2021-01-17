@@ -181,9 +181,15 @@ impl GameScene {
         }
     }
 
-    /// Erase all of the game's entities
+    /// Erase all of the game's entities and reclaim memory.
     pub fn remove_all(&mut self) {
-        function::erase_vec(&mut self.fire);
-        function::erase_vec(&mut self.meteor);
+        // TODO: If shrink_to is stabilized use it
+        // https://doc.rust-lang.org/std/vec/struct.Vec.html#method.shrink_to
+        // Clear vectors
+        self.fire.clear();
+        self.meteor.clear();
+        // Reclaim memory
+        self.meteor.shrink_to_fit();
+        self.fire.shrink_to_fit();
     }
 }
