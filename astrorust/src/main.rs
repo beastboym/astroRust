@@ -1,5 +1,5 @@
 use ggez::audio::SoundSource;
-use ggez::graphics::{clear, present, Color};
+use ggez::graphics::{ present };
 use ggez::input::keyboard::KeyCode;
 use ggez::{
     conf::WindowSetup,
@@ -72,7 +72,6 @@ impl EventHandler for MainState {
         Ok(())
     }
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
-        clear(ctx, Color::new(0.0, 0.0, 0.0, 1.0));
         function::draw_image(&self.game_scene.images.background, ctx);
 
         match self.switch_scene {
