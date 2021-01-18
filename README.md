@@ -14,6 +14,10 @@ Puis :
 
 à noter que le ```--release``` est important, il vous permettra de jouer dans les meilleurs conditions possibles (du moins dans les conditions que nous avons juger optimal).
 
+Si vous tombez sur l'erreur suivante :
+```platform::platform::x11::util::input::PointerState` uninitialized```
+vous pouvez le regler en suivant ces [consignes](https://github.com/ggez/ggez/issues/843#issuecomment-736985569)
+
 Nous avons volontairement bloqué le jeu a 60fps.
 ## Plan : 
 - ~~Faire une fenêtre vide~~
